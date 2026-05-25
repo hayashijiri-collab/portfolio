@@ -217,9 +217,9 @@ select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.o
 .detail-metric { background: var(--surface2); border-radius: 10px; padding: 12px 14px; }
 .dm-label { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.4px; }
 .dm-value { font-size: 17px; font-weight: 500; font-family: var(--mono); margin-top: 4px; }
-.period-row { display: flex; gap: 6px; margin-bottom: 10px; }
+.period-row { display: flex; gap: 5px; margin-bottom: 10px; flex-wrap: wrap; }
 .period-btn {
-  padding: 5px 14px; border-radius: 20px; font-size: 12px; font-weight: 500;
+  padding: 5px 10px; border-radius: 20px; font-size: 11px; font-weight: 500;
   border: 0.5px solid var(--border2); background: none; color: var(--text3);
   cursor: pointer; font-family: var(--sans);
 }
@@ -349,18 +349,58 @@ function calcAsset(a) {
   return { cost, current, pnl, pnlPct, dayPnl, dayPct };
 }
 
-// ── Chart history (simulated) ─────────────────────────────────
+// ── Chart history (simulated, 5 years of daily data) ──────────
+const PERIODS = [
+  { key: '1D', label: '1日', days: 1,    points: 78,  fmt: h => h.t  },
+  { key: '1W', label: '1週', days: 7,    points: 7,   fmt: h => h.d  },
+  { key: '1M', label: '1月', days: 30,   points: 30,  fmt: h => h.d  },
+  { key: '3M', label: '3月', days: 90,   points: 90,  fmt: h => h.d  },
+  { key: '1Y', label: '1年', days: 365,  points: 52,  fmt: h => h.ym },
+  { key: '5Y', label: '5年', days: 1825, points: 60,  fmt: h => h.ym },
+];
+
 function ensureHistory(a) {
   if (a._history) return;
-  const h = [], days = 90;
-  let p = a.price * (0.82 + Math.random() * 0.12);
-  for (let i = days; i >= 0; i--) {
-    p = p * (1 + (Math.random() - 0.48) * 0.022);
+  // Build 5 years of daily closes
+  const TOTAL = 1826;
+  const daily = [];
+  let p = a.price * (0.55 + Math.random() * 0.25);
+  for (let i = TOTAL; i >= 0; i--) {
+    p = Math.max(1, p * (1 + (Math.random() - 0.478) * 0.018));
     const d = new Date(); d.setDate(d.getDate() - i);
-    h.push({ d: d.toLocaleDateString('ja', { month: 'numeric', day: 'numeric' }), p });
+    daily.push({
+      p,
+      d:  d.toLocaleDateString('ja', { month: 'numeric', day: 'numeric' }),
+      ym: d.toLocaleDateString('ja', { year: '2-digit',  month: 'numeric' }),
+      t:  d.toLocaleTimeString('ja', { hour: '2-digit',  minute: '2-digit' }),
+    });
   }
-  h[h.length - 1].p = a.price;
-  a._history = h;
+  daily[daily.length - 1].p = a.price;
+  a._history = daily;
+
+  // Build intraday (78 x 5-min bars for today)
+  const intraday = [];
+  let ip = a.prev > 0 ? a.prev : a.price * 0.99;
+  for (let i = 0; i < 78; i++) {
+    ip = Math.max(1, ip * (1 + (Math.random() - 0.49) * 0.003));
+    const h = 9 + Math.floor((i * 5 + 30) / 60);
+    const m = (i * 5 + 30) % 60;
+    intraday.push({ p: ip, t: `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}` });
+  }
+  intraday[intraday.length - 1].p = a.price;
+  a._intraday = intraday;
+}
+
+function sliceHistory(a, periodKey) {
+  ensureHistory(a);
+  if (periodKey === '1D') return a._intraday.map(h => ({ p: h.p, label: h.t }));
+  const pd = PERIODS.find(p => p.key === periodKey);
+  const raw = a._history.slice(-(pd.days + 1));
+  // Downsample to ~pd.points evenly
+  const step = Math.max(1, Math.floor(raw.length / pd.points));
+  const sampled = raw.filter((_, i) => i % step === 0 || i === raw.length - 1);
+  const labelFn = pd.fmt;
+  return sampled.map(h => ({ p: h.p, label: labelFn(h) }));
 }
 
 // ── Tabs ──────────────────────────────────────────────────────
@@ -412,6 +452,9 @@ function render() {
           <div style="font-size:11px;font-family:var(--mono);margin-top:2px;" class="${cc(tDayPct)}">${sign(tDayPct)}${tDayPct.toFixed(2)}%</div>
         </div>
       </div>
+      <div style="display:flex;gap:5px;margin-top:12px;flex-wrap:wrap;" id="main-period-row">
+        ${PERIODS.map(p => `<button class="period-btn main-period-btn${p.key===mainPeriod?' active':''}" data-period="${p.key}" onclick="onMainPeriod('${p.key}')">${p.label}</button>`).join('')}
+      </div>
       <div class="chart-wrap">
         <canvas id="main-chart" role="img" aria-label="ポートフォリオ評価額推移">評価額推移</canvas>
       </div>
@@ -424,7 +467,7 @@ function render() {
 
   if (list.length > 0) {
     list.forEach(ensureHistory);
-    setTimeout(() => drawMainChart(list), 0);
+    setTimeout(() => drawMainChart(list, mainPeriod), 0);
   }
 
   document.getElementById('last-updated').textContent =
@@ -464,41 +507,58 @@ function chartColor(isUp) {
   return { border: isUp ? '#ef5e5e' : '#5b9cf6', bg: isUp ? 'rgba(239,94,94,0.08)' : 'rgba(91,156,246,0.08)' };
 }
 
-function drawMainChart(list) {
+let mainPeriod = '1M';
+
+function drawMainChart(list, periodKey) {
+  if (periodKey) mainPeriod = periodKey;
   const ctx = document.getElementById('main-chart');
   if (!ctx) return;
   if (mainChart) { mainChart.destroy(); mainChart = null; }
-  const hist = list[0]._history;
-  const labels = hist.map(h => h.d);
-  const totals = hist.map((_, i) => list.reduce((s, a) => s + (a._history[i]?.p ?? a.price) * a.qty, 0));
+
+  // Use first asset's slice as index, sum all assets at same points
+  list.forEach(ensureHistory);
+  const ref = sliceHistory(list[0], mainPeriod);
+  const labels = ref.map(r => r.label);
+  const totals = ref.map((r, i) => {
+    return list.reduce((s, a) => {
+      const sl = sliceHistory(a, mainPeriod);
+      return s + (sl[i]?.p ?? a.price) * a.qty;
+    }, 0);
+  });
+
   const isUp = totals[totals.length - 1] >= totals[0];
   const col = chartColor(isUp);
   mainChart = new Chart(ctx, {
     type: 'line',
-    data: { labels, datasets: [{ data: totals, borderColor: col.border, borderWidth: 1.5, pointRadius: 0, tension: 0.35, fill: true, backgroundColor: col.bg }] },
+    data: { labels, datasets: [{ data: totals, borderColor: col.border, borderWidth: 1.5, pointRadius: 0, tension: 0.3, fill: true, backgroundColor: col.bg }] },
     options: {
       responsive: true, maintainAspectRatio: false, animation: false,
       plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => '¥' + fmt(c.parsed.y) }, displayColors: false } },
-      scales: { x: { display: false }, y: { display: true, position: 'right', grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#5a5754', font: { size: 10 }, callback: v => '¥' + fmt(v) } } }
+      scales: { x: { ticks: { color: '#5a5754', font: { size: 10 }, maxTicksLimit: 6 }, grid: { display: false } }, y: { display: true, position: 'right', grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#5a5754', font: { size: 10 }, callback: v => '¥' + fmt(v) } } }
     }
+  });
+
+  // Update period buttons
+  document.querySelectorAll('.main-period-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.period === mainPeriod);
   });
 }
 
-function drawDetailChart(a, days) {
+function drawDetailChart(a, periodKey) {
   const ctx = document.getElementById('detail-chart');
   if (!ctx) return;
   if (detailChart) { detailChart.destroy(); detailChart = null; }
   ensureHistory(a);
-  const slice = a._history.slice(-(days + 1));
+  const slice = sliceHistory(a, periodKey);
   const isUp = slice[slice.length - 1].p >= slice[0].p;
   const col = chartColor(isUp);
   detailChart = new Chart(ctx, {
     type: 'line',
-    data: { labels: slice.map(h => h.d), datasets: [{ data: slice.map(h => h.p), borderColor: col.border, borderWidth: 2, pointRadius: 0, tension: 0.35, fill: true, backgroundColor: col.bg }] },
+    data: { labels: slice.map(h => h.label), datasets: [{ data: slice.map(h => h.p), borderColor: col.border, borderWidth: 2, pointRadius: 0, tension: 0.3, fill: true, backgroundColor: col.bg }] },
     options: {
       responsive: true, maintainAspectRatio: false, animation: false,
       plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => '¥' + fmt(c.parsed.y) }, displayColors: false } },
-      scales: { x: { ticks: { color: '#5a5754', font: { size: 10 }, maxTicksLimit: 5 }, grid: { display: false } }, y: { position: 'right', grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#5a5754', font: { size: 10 }, callback: v => '¥' + fmt(v) } } }
+      scales: { x: { ticks: { color: '#5a5754', font: { size: 10 }, maxTicksLimit: 6 }, grid: { display: false } }, y: { position: 'right', grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#5a5754', font: { size: 10 }, callback: v => '¥' + fmt(v) } } }
     }
   });
 }
@@ -518,9 +578,7 @@ function openDetail(id) {
       <span style="font-size:12px;color:var(--text3)">${a.account}${a.ticker ? ' · ' + a.ticker : ''}</span>
     </div>
     <div class="period-row" id="period-row">
-      <button class="period-btn active" onclick="setPeriod(this,7,'${id}')">1W</button>
-      <button class="period-btn" onclick="setPeriod(this,30,'${id}')">1M</button>
-      <button class="period-btn" onclick="setPeriod(this,90,'${id}')">3M</button>
+      ${PERIODS.map((p,i) => `<button class="period-btn${i===2?' active':''}" onclick="setPeriod(this,'${p.key}','${id}')">${p.label}</button>`).join('')}
     </div>
     <div style="position:relative;width:100%;height:180px;margin-bottom:4px">
       <canvas id="detail-chart" role="img" aria-label="${a.name}の価格推移">価格推移</canvas>
@@ -541,13 +599,20 @@ function openDetail(id) {
     </div>
   `;
   document.getElementById('detail-sheet').classList.add('open');
-  setTimeout(() => drawDetailChart(a, 7), 50);
+  setTimeout(() => drawDetailChart(a, '1M'), 50);
 }
 
-function setPeriod(btn, days, id) {
+function onMainPeriod(key) {
+  mainPeriod = key;
+  const list = filtered();
+  list.forEach(ensureHistory);
+  drawMainChart(list, key);
+}
+
+function setPeriod(btn, key, id) {
   document.querySelectorAll('#period-row .period-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
-  drawDetailChart(assets.find(x => x.id === id), days);
+  drawDetailChart(assets.find(x => x.id === id), key);
 }
 
 // ── Add / Edit ────────────────────────────────────────────────
