@@ -25,10 +25,10 @@
   --text3:     #6d6d72;
   --accent:    #30d158;
   --accent-bg: rgba(48,209,88,0.14);
-  --up:        #ff6b6b;
-  --up-bg:     rgba(255,107,107,0.13);
-  --down:      #64a8ff;
-  --down-bg:   rgba(100,168,255,0.13);
+  --up:        #4a9eff;
+  --up-bg:     rgba(74,158,255,0.13);
+  --down:      #ff5c5c;
+  --down-bg:   rgba(255,92,92,0.13);
   --fund:      #bf5af2;
   --fund-bg:   rgba(191,90,242,0.14);
   --us:        #64a8ff;
@@ -209,7 +209,7 @@ select{
   background:none;color:var(--text2);font-size:14px;
   font-family:var(--sans);cursor:pointer;font-weight:500;
 }
-.btn-danger{border-color:rgba(255,107,107,.35);color:var(--up)}
+.btn-danger{border-color:rgba(255,92,92,.35);color:var(--down)}
 .btn-sec:active{background:var(--surface2)}
 
 /* ── Detail ── */
@@ -398,8 +398,8 @@ function fmtTime(unix){
 // ── Chart helpers ───────────────────────────────────────────────
 function chartCol(isUp){
   return isUp
-    ? {line:'#ff6b6b', fill:'rgba(255,107,107,0.10)'}
-    : {line:'#64a8ff', fill:'rgba(100,168,255,0.10)'};
+    ? {line:'#4a9eff', fill:'rgba(74,158,255,0.10)'}
+    : {line:'#ff5c5c', fill:'rgba(255,92,92,0.10)'};
 }
 
 function makeChartOpts(isMain){
@@ -527,6 +527,7 @@ function assetCardHTML(a){
 }
 
 // ── Main chart ─────────────────────────────────────────────────
+// Single asset: plot raw stock price. Multiple assets: plot total evaluation value.
 async function loadMainChart(list, periodKey){
   const ctx=document.getElementById('main-chart');
   const loading=document.getElementById('main-chart-loading');
@@ -536,21 +537,27 @@ async function loadMainChart(list, periodKey){
   ctx.style.display='none';
 
   try{
-    // For main chart, use simulated aggregated totals (real ticker data is per-asset only)
-    list.forEach(a=>simulateHistory(a));
-    const dayCount={'1D':0,'1W':7,'1M':30,'3M':90,'1Y':365,'5Y':1825}[periodKey]||30;
     let points;
-    if(periodKey==='1D'){
-      points=list[0]._sim.intra.map((h,i)=>({label:h.t,val:list.reduce((s,a)=>s+a._sim.intra[i].c*a.qty,0)}));
+    if(list.length===1 && list[0].ticker){
+      // Single asset with ticker: fetch real price history
+      const data=await getHistory(list[0], periodKey);
+      points=data.map(h=>({label:h.label, val:h.c}));
     } else {
-      const ref=list[0]._sim.daily;
-      const slice=ref.slice(-dayCount);
-      const step=Math.max(1,Math.floor(slice.length/60));
-      points=slice.filter((_,i)=>i%step===0||i===slice.length-1).map((h,ri)=>{
-        const gi=ref.length-dayCount+ri*step;
-        const val=list.reduce((s,a)=>s+(a._sim.daily[Math.min(gi,a._sim.daily.length-1)]?.c??a.price)*a.qty,0);
-        return {label:fmtDate(h.t*1000,periodKey),val};
-      });
+      // Multiple assets or no ticker: simulate aggregated total evaluation value
+      list.forEach(a=>simulateHistory(a));
+      const dayCount={'1D':0,'1W':7,'1M':30,'3M':90,'1Y':365,'5Y':1825}[periodKey]||30;
+      if(periodKey==='1D'){
+        points=list[0]._sim.intra.map((h,i)=>({label:h.t, val:list.reduce((s,a)=>s+a._sim.intra[i].c*a.qty,0)}));
+      } else {
+        const ref=list[0]._sim.daily;
+        const slice=ref.slice(-dayCount);
+        const step=Math.max(1,Math.floor(slice.length/60));
+        points=slice.filter((_,i)=>i%step===0||i===slice.length-1).map((h,ri)=>{
+          const gi=ref.length-dayCount+ri*step;
+          const val=list.reduce((s,a)=>s+(a._sim.daily[Math.min(gi,a._sim.daily.length-1)]?.c??a.price)*a.qty,0);
+          return {label:fmtDate(h.t*1000,periodKey), val};
+        });
+      }
     }
     const isUp=points[points.length-1].val>=points[0].val;
     const col=chartCol(isUp);
