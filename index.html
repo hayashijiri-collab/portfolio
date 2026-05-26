@@ -6,226 +6,220 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Portfolio">
-<meta name="theme-color" content="#0f0f0f">
+<meta name="theme-color" content="#111111">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
 <title>投資ポートフォリオ</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <style>
 :root {
-  --bg: #0f0f0f;
-  --surface: #1a1a1a;
-  --surface2: #242424;
-  --surface3: #2e2e2e;
-  --border: rgba(255,255,255,0.08);
-  --border2: rgba(255,255,255,0.14);
-  --text: #f0ede8;
-  --text2: #8a8680;
-  --text3: #5a5754;
-  --accent: #c8f562;
-  --accent-dim: rgba(200,245,98,0.12);
-  --up: #ef5e5e;
-  --up-dim: rgba(239,94,94,0.12);
-  --down: #5b9cf6;
-  --down-dim: rgba(91,156,246,0.12);
-  --fund: #a78bfa;
-  --fund-dim: rgba(167,139,250,0.15);
-  --us: #5b9cf6;
-  --us-dim: rgba(91,156,246,0.15);
-  --jp: #fb923c;
-  --jp-dim: rgba(251,146,60,0.15);
-  --safe-top: env(safe-area-inset-top, 0px);
-  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --bg:        #111111;
+  --surface:   #1c1c1e;
+  --surface2:  #2c2c2e;
+  --surface3:  #3a3a3c;
+  --border:    rgba(255,255,255,0.10);
+  --border2:   rgba(255,255,255,0.18);
+  --text:      #f2f2f7;
+  --text2:     #aeaeb2;
+  --text3:     #6d6d72;
+  --accent:    #30d158;
+  --accent-bg: rgba(48,209,88,0.14);
+  --up:        #ff6b6b;
+  --up-bg:     rgba(255,107,107,0.13);
+  --down:      #64a8ff;
+  --down-bg:   rgba(100,168,255,0.13);
+  --fund:      #bf5af2;
+  --fund-bg:   rgba(191,90,242,0.14);
+  --us:        #64a8ff;
+  --us-bg:     rgba(100,168,255,0.14);
+  --jp:        #ff9f0a;
+  --jp-bg:     rgba(255,159,10,0.14);
+  --safe-top:  env(safe-area-inset-top,0px);
+  --safe-bot:  env(safe-area-inset-bottom,0px);
   --mono: 'DM Mono', monospace;
   --sans: 'Noto Sans JP', sans-serif;
+  --r: 14px;
 }
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-html, body { height: 100%; overflow: hidden; background: var(--bg); }
-body { font-family: var(--sans); color: var(--text); }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;background:var(--bg)}
+body{font-family:var(--sans);color:var(--text);font-size:14px;-webkit-font-smoothing:antialiased}
 
-/* Layout */
-#app { display: flex; flex-direction: column; height: 100%; }
-.header {
-  padding: calc(var(--safe-top) + 12px) 20px 12px;
-  background: var(--bg);
-  border-bottom: 0.5px solid var(--border);
-  flex-shrink: 0;
+/* ── Layout ── */
+#app{display:flex;flex-direction:column;height:100%}
+.header{
+  padding:calc(var(--safe-top) + 14px) 18px 12px;
+  background:var(--surface);
+  border-bottom:0.5px solid var(--border);
+  flex-shrink:0;
 }
-.header-row { display: flex; justify-content: space-between; align-items: center; }
-.header-title { font-size: 18px; font-weight: 700; letter-spacing: -0.3px; }
-.header-time { font-size: 11px; color: var(--text3); font-family: var(--mono); }
-.tab-bar {
-  display: flex; background: var(--bg);
-  border-bottom: 0.5px solid var(--border);
-  flex-shrink: 0; padding: 0 16px;
+.header-row{display:flex;justify-content:space-between;align-items:center}
+.header-title{font-size:20px;font-weight:700;letter-spacing:-0.4px;color:var(--text)}
+.header-time{font-size:11px;color:var(--text3);font-family:var(--mono);letter-spacing:0.3px}
+.tab-bar{
+  display:flex;background:var(--surface);
+  border-bottom:0.5px solid var(--border);
+  flex-shrink:0;padding:0 12px;
 }
-.tab {
-  flex: 1; padding: 10px 4px; text-align: center;
-  font-size: 12px; color: var(--text3); cursor: pointer;
-  border-bottom: 2px solid transparent; transition: all 0.15s;
-  font-family: var(--sans); font-weight: 500;
+.tab{
+  flex:1;padding:10px 2px;text-align:center;font-size:12px;font-weight:500;
+  color:var(--text3);cursor:pointer;border-bottom:2px solid transparent;
+  transition:color .15s,border-color .15s;letter-spacing:0.3px;
 }
-.tab.active { color: var(--accent); border-bottom-color: var(--accent); }
-.scroll-area {
-  flex: 1; overflow-y: auto; overflow-x: hidden;
-  padding: 0 0 calc(var(--safe-bottom) + 80px);
-  -webkit-overflow-scrolling: touch;
+.tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.scroll-area{
+  flex:1;overflow-y:auto;overflow-x:hidden;
+  padding:0 0 calc(var(--safe-bot) + 88px);
+  -webkit-overflow-scrolling:touch;
+  background:var(--bg);
 }
-.section { padding: 14px 16px 0; }
+.section{padding:14px 14px 0}
 
-/* Summary card */
-.summary-card {
-  background: var(--surface);
-  border: 0.5px solid var(--border);
-  border-radius: 16px;
-  padding: 18px;
-  margin-bottom: 12px;
+/* ── Summary card ── */
+.summary-card{
+  background:var(--surface);
+  border:0.5px solid var(--border);
+  border-radius:var(--r);
+  padding:18px 18px 14px;
+  margin-bottom:12px;
 }
-.summary-label { font-size: 11px; color: var(--text3); letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 4px; }
-.summary-total { font-size: 32px; font-weight: 700; font-family: var(--mono); letter-spacing: -1px; }
-.summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
-.summary-metric { background: var(--surface2); border-radius: 10px; padding: 10px 12px; }
-.m-label { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.4px; }
-.m-value { font-size: 15px; font-weight: 500; font-family: var(--mono); margin-top: 3px; }
-.chart-wrap { position: relative; width: 100%; height: 120px; margin-top: 14px; }
+.s-label{font-size:11px;color:var(--text3);letter-spacing:.8px;text-transform:uppercase;margin-bottom:6px;font-weight:500}
+.s-total{font-size:34px;font-weight:700;font-family:var(--mono);letter-spacing:-1.5px;color:var(--text);line-height:1}
+.s-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
+.s-metric{background:var(--surface2);border-radius:12px;padding:12px 14px;border:0.5px solid var(--border)}
+.sm-label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:5px;font-weight:500}
+.sm-val{font-size:16px;font-weight:700;font-family:var(--mono);line-height:1}
+.sm-sub{font-size:12px;font-family:var(--mono);margin-top:4px;font-weight:500}
+.chart-wrap{position:relative;width:100%;height:140px;margin-top:14px}
+.period-strip{display:flex;gap:4px;margin-top:12px}
+.pb{
+  padding:6px 0;border-radius:8px;font-size:11px;font-weight:600;
+  border:0.5px solid var(--border2);background:none;color:var(--text3);
+  cursor:pointer;font-family:var(--sans);transition:all .15s;flex:1;text-align:center;
+  letter-spacing:0.3px;
+}
+.pb.active{background:var(--accent);color:#111;border-color:var(--accent)}
+.pb:not(.active):active{background:var(--surface2)}
 
-/* Color helpers */
-.up { color: var(--up); }
-.down { color: var(--down); }
-.flat { color: var(--text3); }
+/* ── Color helpers ── */
+.up{color:var(--up)}.down{color:var(--down)}.flat{color:var(--text3)}
 
-/* Asset cards */
-.account-group-title {
-  font-size: 10px; color: var(--text3); letter-spacing: 1px;
-  text-transform: uppercase; padding: 14px 0 6px; font-weight: 500;
+/* ── Update row ── */
+.update-row{display:flex;justify-content:flex-end;align-items:center;padding:4px 0 10px}
+.update-btn{
+  display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;
+  color:var(--accent);background:var(--accent-bg);
+  border:0.5px solid rgba(48,209,88,0.25);border-radius:20px;
+  padding:7px 16px;cursor:pointer;font-family:var(--sans);
+  transition:opacity .15s;letter-spacing:0.3px;
 }
-.asset-card {
-  background: var(--surface);
-  border: 0.5px solid var(--border);
-  border-radius: 14px;
-  padding: 14px 16px;
-  margin-bottom: 8px;
-  cursor: pointer;
-  transition: background 0.1s;
-  -webkit-user-select: none; user-select: none;
-}
-.asset-card:active { background: var(--surface2); }
-.asset-top { display: flex; justify-content: space-between; align-items: flex-start; }
-.asset-name { font-size: 14px; font-weight: 500; }
-.asset-account-label { font-size: 11px; color: var(--text3); margin-top: 2px; }
-.type-badge {
-  font-size: 10px; padding: 3px 8px; border-radius: 20px;
-  font-weight: 500; letter-spacing: 0.3px; flex-shrink: 0; margin-left: 8px; margin-top: 2px;
-}
-.badge-fund { background: var(--fund-dim); color: var(--fund); }
-.badge-us   { background: var(--us-dim);   color: var(--us); }
-.badge-jp   { background: var(--jp-dim);   color: var(--jp); }
-.asset-mid { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 12px; }
-.asset-price { font-size: 20px; font-weight: 700; font-family: var(--mono); }
-.asset-eval { font-size: 11px; color: var(--text3); margin-top: 2px; font-family: var(--mono); }
-.asset-pnl-value { font-size: 14px; font-weight: 500; font-family: var(--mono); text-align: right; }
-.asset-pnl-pct { font-size: 11px; font-family: var(--mono); text-align: right; margin-top: 2px; }
-.asset-day { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; padding-top: 10px; border-top: 0.5px solid var(--border); font-size: 11px; }
-.asset-day-label { color: var(--text3); }
+.update-btn:active{opacity:.7}.update-btn:disabled{opacity:.4;cursor:default}
+@keyframes spin{to{transform:rotate(360deg)}}
 
-/* FAB */
-.fab {
-  position: fixed;
-  bottom: calc(var(--safe-bottom) + 20px);
-  right: 20px;
-  width: 56px; height: 56px;
-  border-radius: 50%;
-  background: var(--accent);
-  border: none; cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  z-index: 50;
-  transition: transform 0.15s;
+/* ── Account group ── */
+.group-title{
+  font-size:10px;color:var(--text3);letter-spacing:1.2px;
+  text-transform:uppercase;padding:14px 0 6px;font-weight:600;
 }
-.fab:active { transform: scale(0.93); }
-.fab i { font-size: 24px; color: #0f0f0f; }
 
-/* Update button */
-.update-row { display: flex; justify-content: flex-end; padding: 4px 0 8px; }
-.update-btn {
-  display: flex; align-items: center; gap: 5px;
-  font-size: 12px; color: var(--text3); background: none; border: none; cursor: pointer;
-  font-family: var(--sans);
+/* ── Asset card ── */
+.asset-card{
+  background:var(--surface);border:0.5px solid var(--border);
+  border-radius:var(--r);padding:15px 16px;margin-bottom:8px;
+  cursor:pointer;transition:background .1s;
+  -webkit-user-select:none;user-select:none;
 }
-.update-btn:active { color: var(--accent); }
-.update-btn:disabled { opacity: 0.5; cursor: default; }
-@keyframes spin { to { transform: rotate(360deg); } }
+.asset-card:active{background:var(--surface2)}
+.ac-top{display:flex;justify-content:space-between;align-items:flex-start}
+.ac-name{font-size:15px;font-weight:600;color:var(--text);line-height:1.3}
+.ac-sub{font-size:11px;color:var(--text3);margin-top:3px;letter-spacing:0.2px}
+.badge{font-size:10px;padding:3px 9px;border-radius:20px;font-weight:700;flex-shrink:0;margin-left:8px;margin-top:1px;letter-spacing:0.3px}
+.badge-fund{background:var(--fund-bg);color:var(--fund)}
+.badge-us{background:var(--us-bg);color:var(--us)}
+.badge-jp{background:var(--jp-bg);color:var(--jp)}
+.ac-mid{display:flex;justify-content:space-between;align-items:flex-end;margin-top:13px}
+.ac-price{font-size:24px;font-weight:700;font-family:var(--mono);color:var(--text);letter-spacing:-0.5px;line-height:1}
+.ac-eval{font-size:11px;color:var(--text3);margin-top:4px;font-family:var(--mono)}
+.ac-pnl{text-align:right}
+.ac-pnl-val{font-size:15px;font-weight:700;font-family:var(--mono)}
+.ac-pnl-pct{font-size:12px;font-family:var(--mono);margin-top:3px;font-weight:600}
+.ac-day{
+  display:flex;justify-content:space-between;align-items:center;
+  margin-top:11px;padding-top:10px;
+  border-top:0.5px solid var(--border);font-size:11px;
+}
+.ac-day-label{color:var(--text3);font-weight:500}
 
-/* Empty state */
-.empty-state { text-align: center; padding: 60px 24px; color: var(--text3); }
-.empty-state i { font-size: 48px; display: block; margin-bottom: 12px; opacity: 0.3; }
-.empty-state p { font-size: 14px; line-height: 1.6; }
+/* ── FAB ── */
+.fab{
+  position:fixed;bottom:calc(var(--safe-bot)+22px);right:18px;
+  width:56px;height:56px;border-radius:50%;
+  background:var(--accent);border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  z-index:50;transition:transform .15s;
+}
+.fab:active{transform:scale(.93)}.fab i{font-size:24px;color:#111}
 
-/* Sheet (bottom modal) */
-.sheet-overlay {
-  display: none; position: fixed; inset: 0;
-  background: rgba(0,0,0,0.6); z-index: 100;
-  align-items: flex-end;
-}
-.sheet-overlay.open { display: flex; }
-.sheet {
-  background: var(--surface);
-  border-radius: 20px 20px 0 0;
-  padding: 0 20px calc(var(--safe-bottom) + 20px);
-  width: 100%;
-  max-height: 92vh;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-}
-.sheet-handle { width: 36px; height: 4px; background: var(--border2); border-radius: 2px; margin: 12px auto 20px; }
-.sheet-title { font-size: 16px; font-weight: 700; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-.close-btn { background: var(--surface3); border: none; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-.close-btn i { font-size: 16px; color: var(--text2); }
+/* ── Empty ── */
+.empty-state{text-align:center;padding:60px 24px;color:var(--text3)}
+.empty-state i{font-size:48px;display:block;margin-bottom:12px;opacity:.2}
+.empty-state p{font-size:14px;line-height:1.7;color:var(--text2)}
 
-/* Form */
-.form-group { margin-bottom: 14px; }
-.form-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 6px; }
-.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-input[type=text], input[type=number], select {
-  width: 100%; padding: 12px 14px;
-  background: var(--surface2); border: 0.5px solid var(--border2);
-  border-radius: 10px; color: var(--text);
-  font-size: 15px; font-family: var(--sans);
-  -webkit-appearance: none; appearance: none;
+/* ── Sheet ── */
+.sheet-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:100;align-items:flex-end}
+.sheet-overlay.open{display:flex}
+.sheet{
+  background:var(--surface);border-radius:22px 22px 0 0;
+  border-top:0.5px solid var(--border2);
+  padding:0 18px calc(var(--safe-bot)+22px);
+  width:100%;max-height:92vh;overflow-y:auto;-webkit-overflow-scrolling:touch;
 }
-input:focus, select:focus { outline: none; border-color: var(--accent); }
-select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235a5754' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px; }
-.btn-primary {
-  width: 100%; padding: 15px;
-  background: var(--accent); color: #0f0f0f;
-  border: none; border-radius: 12px;
-  font-size: 15px; font-weight: 700;
-  font-family: var(--sans); cursor: pointer;
-  margin-top: 6px; letter-spacing: 0.2px;
-  transition: opacity 0.15s;
-}
-.btn-primary:active { opacity: 0.85; }
-.btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 8px; }
-.btn-sec {
-  padding: 13px; border-radius: 12px; border: 0.5px solid var(--border2);
-  background: none; color: var(--text2); font-size: 14px; font-family: var(--sans); cursor: pointer;
-}
-.btn-danger { border-color: var(--up); color: var(--up); }
-.btn-sec:active { background: var(--surface2); }
+.sheet-handle{width:36px;height:4px;background:var(--surface3);border-radius:2px;margin:12px auto 18px}
+.sheet-title{font-size:16px;font-weight:700;display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;color:var(--text)}
+.close-btn{background:var(--surface2);border:0.5px solid var(--border);width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.close-btn i{font-size:16px;color:var(--text2)}
 
-/* Detail sheet */
-.detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
-.detail-metric { background: var(--surface2); border-radius: 10px; padding: 12px 14px; }
-.dm-label { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.4px; }
-.dm-value { font-size: 17px; font-weight: 500; font-family: var(--mono); margin-top: 4px; }
-.period-row { display: flex; gap: 5px; margin-bottom: 10px; flex-wrap: wrap; }
-.period-btn {
-  padding: 5px 10px; border-radius: 20px; font-size: 11px; font-weight: 500;
-  border: 0.5px solid var(--border2); background: none; color: var(--text3);
-  cursor: pointer; font-family: var(--sans);
+/* ── Form ── */
+.form-group{margin-bottom:13px}
+.form-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;display:block;margin-bottom:6px;font-weight:600}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+input[type=text],input[type=number],select{
+  width:100%;padding:12px 14px;
+  background:var(--surface2);border:0.5px solid var(--border2);
+  border-radius:10px;color:var(--text);font-size:15px;
+  font-family:var(--sans);-webkit-appearance:none;appearance:none;
 }
-.period-btn.active { background: var(--accent-dim); color: var(--accent); border-color: var(--accent); }
+input::placeholder{color:var(--text3)}
+input:focus,select:focus{outline:none;border-color:var(--accent);background:var(--surface)}
+select{
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236d6d72' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 13px center;padding-right:34px;
+  background-color:var(--surface2);
+}
+.btn-primary{
+  width:100%;padding:14px;background:var(--accent);color:#111;
+  border:none;border-radius:12px;font-size:15px;font-weight:700;
+  font-family:var(--sans);cursor:pointer;margin-top:6px;transition:opacity .15s;
+  letter-spacing:0.3px;
+}
+.btn-primary:active{opacity:.85}
+.btn-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.btn-sec{
+  padding:13px;border-radius:12px;border:0.5px solid var(--border2);
+  background:none;color:var(--text2);font-size:14px;
+  font-family:var(--sans);cursor:pointer;font-weight:500;
+}
+.btn-danger{border-color:rgba(255,107,107,.35);color:var(--up)}
+.btn-sec:active{background:var(--surface2)}
+
+/* ── Detail ── */
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.dm{background:var(--surface2);border-radius:12px;padding:13px 14px;border:0.5px solid var(--border)}
+.dm-label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px;font-weight:600}
+.dm-val{font-size:18px;font-weight:700;font-family:var(--mono);color:var(--text)}
+.detail-chart-wrap{position:relative;width:100%;height:190px;margin-bottom:6px}
+.chart-loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--text3);font-size:12px;gap:8px;background:var(--surface);border-radius:10px}
+.sim-note{font-size:10px;color:var(--text3);background:var(--surface2);padding:2px 8px;border-radius:10px;border:0.5px solid var(--border)}
 </style>
 </head>
 <body>
@@ -242,14 +236,9 @@ select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.o
     <div class="tab" data-tab="us">米株</div>
     <div class="tab" data-tab="jp">日本株</div>
   </div>
-  <div class="scroll-area">
-    <div class="section" id="main-content"></div>
-  </div>
+  <div class="scroll-area"><div class="section" id="main-content"></div></div>
 </div>
-
-<button class="fab" id="fab-btn" aria-label="銘柄を追加">
-  <i class="ti ti-plus"></i>
-</button>
+<button class="fab" id="fab-btn" aria-label="銘柄を追加"><i class="ti ti-plus"></i></button>
 
 <!-- Add/Edit sheet -->
 <div class="sheet-overlay" id="add-sheet">
@@ -261,43 +250,18 @@ select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.o
     </div>
     <div class="form-group">
       <label class="form-label">種別</label>
-      <select id="f-type">
-        <option value="fund">投資信託</option>
-        <option value="us">米株</option>
-        <option value="jp">日本株</option>
-      </select>
+      <select id="f-type"><option value="fund">投資信託</option><option value="us">米株</option><option value="jp">日本株</option></select>
     </div>
-    <div class="form-group">
-      <label class="form-label">銘柄名</label>
-      <input type="text" id="f-name" placeholder="例: eMAXIS Slim 全世界株式">
-    </div>
-    <div class="form-group">
-      <label class="form-label">ティッカー / コード（任意）</label>
-      <input type="text" id="f-ticker" placeholder="米株: AAPL / 日本株: 7203.T">
-    </div>
-    <div class="form-group">
-      <label class="form-label">口座名</label>
-      <input type="text" id="f-account" placeholder="例: 楽天証券 NISA">
+    <div class="form-group"><label class="form-label">銘柄名</label><input type="text" id="f-name" placeholder="例: eMAXIS Slim 全世界株式"></div>
+    <div class="form-group"><label class="form-label">ティッカー / コード（価格自動取得に必要）</label><input type="text" id="f-ticker" placeholder="米株: AAPL　日本株: 7203.T"></div>
+    <div class="form-group"><label class="form-label">口座名</label><input type="text" id="f-account" placeholder="例: 楽天証券 NISA"></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">取得単価</label><input type="number" id="f-cost" placeholder="0"></div>
+      <div class="form-group"><label class="form-label">保有数量</label><input type="number" id="f-qty" placeholder="0"></div>
     </div>
     <div class="form-row">
-      <div class="form-group">
-        <label class="form-label">取得単価</label>
-        <input type="number" id="f-cost" placeholder="0">
-      </div>
-      <div class="form-group">
-        <label class="form-label">保有数量</label>
-        <input type="number" id="f-qty" placeholder="0">
-      </div>
-    </div>
-    <div class="form-row">
-      <div class="form-group">
-        <label class="form-label">現在価格</label>
-        <input type="number" id="f-price" placeholder="0">
-      </div>
-      <div class="form-group">
-        <label class="form-label">前日終値</label>
-        <input type="number" id="f-prev" placeholder="0">
-      </div>
+      <div class="form-group"><label class="form-label">現在価格</label><input type="number" id="f-price" placeholder="0"></div>
+      <div class="form-group"><label class="form-label">前日終値</label><input type="number" id="f-prev" placeholder="0"></div>
     </div>
     <button class="btn-primary" onclick="saveAsset()">保存する</button>
   </div>
@@ -305,452 +269,475 @@ select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.o
 
 <!-- Detail sheet -->
 <div class="sheet-overlay" id="detail-sheet">
-  <div class="sheet">
-    <div class="sheet-handle"></div>
-    <div id="detail-content"></div>
-  </div>
+  <div class="sheet"><div id="detail-content"></div></div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
-// ── State ─────────────────────────────────────────────────────
-let assets = JSON.parse(localStorage.getItem('portfolio_v2') || 'null');
-let currentTab = 'all';
-let editingId = null;
-let mainChart = null, detailChart = null;
+// ── State ──────────────────────────────────────────────────────
+let assets = JSON.parse(localStorage.getItem('portfolio_v5') || 'null');
+let currentTab='all', editingId=null, mainPeriod='1M';
+let mainChart=null, detailChart=null;
+const histCache={};
+
+const TYPE_LABEL = { fund:'投資信託', us:'米株', jp:'日本株' };
+const PERIODS = [
+  { key:'1D', label:'1日', yahooRange:'1d',  yahooInterval:'5m'  },
+  { key:'1W', label:'1週', yahooRange:'5d',  yahooInterval:'60m' },
+  { key:'1M', label:'1月', yahooRange:'1mo', yahooInterval:'1d'  },
+  { key:'3M', label:'3月', yahooRange:'3mo', yahooInterval:'1d'  },
+  { key:'1Y', label:'1年', yahooRange:'1y',  yahooInterval:'1wk' },
+  { key:'5Y', label:'5年', yahooRange:'5y',  yahooInterval:'1mo' },
+];
 
 if (!assets) {
   assets = [
-    { id: '1', type: 'fund', name: 'eMAXIS Slim 全世界株式', ticker: '', account: '楽天証券 NISA', cost: 18000, qty: 100, price: 23450, prev: 23100 },
-    { id: '2', type: 'us',   name: 'Apple',                ticker: 'AAPL', account: '楽天証券 特定', cost: 22000, qty: 10,  price: 27800, prev: 27500 },
-    { id: '3', type: 'us',   name: 'NVIDIA',               ticker: 'NVDA', account: '楽天証券 特定', cost: 85000, qty: 5,   price: 132000, prev: 130000 },
-    { id: '4', type: 'jp',   name: 'トヨタ自動車',           ticker: '7203', account: 'SBI証券 特定', cost: 2800, qty: 100, price: 3240,  prev: 3210 },
+    { id:'1', type:'fund', name:'eMAXIS Slim 全世界株式', ticker:'',       account:'楽天証券 NISA', cost:18000, qty:100, price:23450, prev:23100 },
+    { id:'2', type:'us',   name:'Apple',                  ticker:'AAPL',   account:'楽天証券 特定', cost:22000, qty:10,  price:27800, prev:27500 },
+    { id:'3', type:'us',   name:'NVIDIA',                 ticker:'NVDA',   account:'楽天証券 特定', cost:85000, qty:5,   price:132000, prev:130000 },
+    { id:'4', type:'jp',   name:'トヨタ自動車',            ticker:'7203.T', account:'SBI証券 特定',  cost:2800,  qty:100, price:3240,  prev:3210 },
   ];
-  save();
+  saveAssets();
+}
+function saveAssets(){ localStorage.setItem('portfolio_v5', JSON.stringify(assets)); }
+
+// ── Format ─────────────────────────────────────────────────────
+function fmt(n,d=0){ return isNaN(n)||n===null?'—':Math.abs(n).toLocaleString('ja-JP',{minimumFractionDigits:d,maximumFractionDigits:d}); }
+function sign(n){ return n>=0?'+':'−'; }
+function cc(n)  { return n>0?'up':n<0?'down':'flat'; }
+function calcAsset(a){
+  const cost=a.cost*a.qty, current=a.price*a.qty;
+  const pnl=current-cost, pnlPct=cost>0?pnl/cost*100:0;
+  const dayPnl=(a.price-a.prev)*a.qty;
+  const dayPct=a.prev>0?(a.price-a.prev)/a.prev*100:0;
+  return {cost,current,pnl,pnlPct,dayPnl,dayPct};
 }
 
-const TYPE_LABEL = { fund: '投資信託', us: '米株', jp: '日本株' };
-
-// ── Persistence ───────────────────────────────────────────────
-function save() { localStorage.setItem('portfolio_v2', JSON.stringify(assets)); }
-
-// ── Formatting ────────────────────────────────────────────────
-function fmt(n, d = 0) {
-  if (isNaN(n) || n === null) return '—';
-  return Math.abs(n).toLocaleString('ja-JP', { minimumFractionDigits: d, maximumFractionDigits: d });
-}
-function sign(n) { return n >= 0 ? '+' : '−'; }
-function cc(n) { return n > 0 ? 'up' : n < 0 ? 'down' : 'flat'; }
-function colorOf(n) { return n > 0 ? 'var(--up)' : n < 0 ? 'var(--down)' : 'var(--text3)'; }
-
-function calcAsset(a) {
-  const cost = a.cost * a.qty, current = a.price * a.qty;
-  const pnl = current - cost, pnlPct = cost > 0 ? pnl / cost * 100 : 0;
-  const dayPnl = (a.price - a.prev) * a.qty;
-  const dayPct = a.prev > 0 ? (a.price - a.prev) / a.prev * 100 : 0;
-  return { cost, current, pnl, pnlPct, dayPnl, dayPct };
-}
-
-// ── Chart history (simulated, 5 years of daily data) ──────────
-const PERIODS = [
-  { key: '1D', label: '1日', days: 1,    points: 78,  fmt: h => h.t  },
-  { key: '1W', label: '1週', days: 7,    points: 7,   fmt: h => h.d  },
-  { key: '1M', label: '1月', days: 30,   points: 30,  fmt: h => h.d  },
-  { key: '3M', label: '3月', days: 90,   points: 90,  fmt: h => h.d  },
-  { key: '1Y', label: '1年', days: 365,  points: 52,  fmt: h => h.ym },
-  { key: '5Y', label: '5年', days: 1825, points: 60,  fmt: h => h.ym },
-];
-
-function ensureHistory(a) {
-  if (a._history) return;
-  // Build 5 years of daily closes
-  const TOTAL = 1826;
-  const daily = [];
-  let p = a.price * (0.55 + Math.random() * 0.25);
-  for (let i = TOTAL; i >= 0; i--) {
-    p = Math.max(1, p * (1 + (Math.random() - 0.478) * 0.018));
-    const d = new Date(); d.setDate(d.getDate() - i);
-    daily.push({
-      p,
-      d:  d.toLocaleDateString('ja', { month: 'numeric', day: 'numeric' }),
-      ym: d.toLocaleDateString('ja', { year: '2-digit',  month: 'numeric' }),
-      t:  d.toLocaleTimeString('ja', { hour: '2-digit',  minute: '2-digit' }),
-    });
+// ── Simulated history (fallback for no-ticker assets) ──────────
+function simulateHistory(a){
+  if(a._sim) return a._sim;
+  const TOTAL=1826; const daily=[];
+  let p=a.price*(0.55+Math.random()*.25);
+  for(let i=TOTAL;i>=0;i--){
+    p=Math.max(1,p*(1+(Math.random()-.478)*.018));
+    const d=new Date(); d.setDate(d.getDate()-i);
+    daily.push({t:d.getTime()/1000, c:p});
   }
-  daily[daily.length - 1].p = a.price;
-  a._history = daily;
-
-  // Build intraday (78 x 5-min bars for today)
-  const intraday = [];
-  let ip = a.prev > 0 ? a.prev : a.price * 0.99;
-  for (let i = 0; i < 78; i++) {
-    ip = Math.max(1, ip * (1 + (Math.random() - 0.49) * 0.003));
-    const h = 9 + Math.floor((i * 5 + 30) / 60);
-    const m = (i * 5 + 30) % 60;
-    intraday.push({ p: ip, t: `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}` });
+  daily[daily.length-1].c=a.price;
+  const intra=[]; let ip=a.prev||a.price*.99;
+  for(let i=0;i<78;i++){
+    ip=Math.max(1,ip*(1+(Math.random()-.49)*.003));
+    const h=9+Math.floor((i*5+30)/60), m=(i*5+30)%60;
+    intra.push({t:`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`, c:ip});
   }
-  intraday[intraday.length - 1].p = a.price;
-  a._intraday = intraday;
+  intra[intra.length-1].c=a.price;
+  a._sim={daily,intra}; return a._sim;
 }
 
-function sliceHistory(a, periodKey) {
-  ensureHistory(a);
-  if (periodKey === '1D') return a._intraday.map(h => ({ p: h.p, label: h.t }));
-  const pd = PERIODS.find(p => p.key === periodKey);
-  const raw = a._history.slice(-(pd.days + 1));
-  // Downsample to ~pd.points evenly
-  const step = Math.max(1, Math.floor(raw.length / pd.points));
-  const sampled = raw.filter((_, i) => i % step === 0 || i === raw.length - 1);
-  const labelFn = pd.fmt;
-  return sampled.map(h => ({ p: h.p, label: labelFn(h) }));
+// ── Yahoo Finance ───────────────────────────────────────────────
+const PROXY='https://api.allorigins.win/get?url=';
+
+async function fetchYahooHistory(ticker, range, interval){
+  const cacheKey=`${ticker}_${range}_${interval}`;
+  if(histCache[cacheKey]) return histCache[cacheKey];
+  const url=`https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(ticker)}?range=${range}&interval=${interval}&includePrePost=false`;
+  const res=await fetch(PROXY+encodeURIComponent(url),{signal:AbortSignal.timeout(10000)});
+  if(!res.ok) throw new Error('proxy');
+  const json=await res.json();
+  const result=JSON.parse(json.contents)?.chart?.result?.[0];
+  if(!result) throw new Error('no data');
+  const timestamps=result.timestamp||[];
+  const closes=result.indicators?.quote?.[0]?.close||[];
+  const data=timestamps.map((t,i)=>({t,c:closes[i]})).filter(p=>p.c!=null);
+  histCache[cacheKey]=data;
+  return data;
 }
 
-// ── Tabs ──────────────────────────────────────────────────────
-document.getElementById('tab-bar').addEventListener('click', e => {
-  const tab = e.target.closest('[data-tab]');
-  if (!tab) return;
-  currentTab = tab.dataset.tab;
-  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === currentTab));
+async function fetchYahooPrice(ticker){
+  const url=`https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(ticker)}?interval=1d&range=2d`;
+  const res=await fetch(PROXY+encodeURIComponent(url),{signal:AbortSignal.timeout(8000)});
+  if(!res.ok) throw new Error('proxy');
+  const json=await res.json();
+  const meta=JSON.parse(json.contents)?.chart?.result?.[0]?.meta;
+  if(!meta) throw new Error('no data');
+  return { price: meta.regularMarketPrice, prev: meta.chartPreviousClose ?? meta.previousClose ?? meta.regularMarketPrice };
+}
+
+// ── Get history for a given asset & period ─────────────────────
+async function getHistory(a, periodKey){
+  const pd=PERIODS.find(p=>p.key===periodKey);
+  if(a.ticker){
+    const raw=await fetchYahooHistory(a.ticker, pd.yahooRange, pd.yahooInterval);
+    return raw.map(h=>({
+      label: periodKey==='1D' ? fmtTime(h.t) : fmtDate(h.t*1000, periodKey),
+      c: h.c
+    }));
+  }
+  // fallback: simulate
+  simulateHistory(a);
+  if(periodKey==='1D'){
+    return a._sim.intra.map(h=>({label:h.t, c:h.c}));
+  }
+  const dayCount={'1W':7,'1M':30,'3M':90,'1Y':365,'5Y':1825}[periodKey]||30;
+  const slice=a._sim.daily.slice(-dayCount);
+  const step=Math.max(1,Math.floor(slice.length/60));
+  return slice.filter((_,i)=>i%step===0||i===slice.length-1)
+    .map(h=>({label:fmtDate(h.t*1000,periodKey), c:h.c}));
+}
+
+function fmtDate(ms,periodKey){
+  const d=new Date(ms);
+  if(periodKey==='5Y') return d.toLocaleDateString('ja',{year:'2-digit',month:'numeric'});
+  if(periodKey==='1Y') return d.toLocaleDateString('ja',{month:'numeric',day:'numeric'});
+  return d.toLocaleDateString('ja',{month:'numeric',day:'numeric'});
+}
+function fmtTime(unix){
+  return new Date(unix*1000).toLocaleTimeString('ja',{hour:'2-digit',minute:'2-digit'});
+}
+
+// ── Chart helpers ───────────────────────────────────────────────
+function chartCol(isUp){
+  return isUp
+    ? {line:'#ff6b6b', fill:'rgba(255,107,107,0.10)'}
+    : {line:'#64a8ff', fill:'rgba(100,168,255,0.10)'};
+}
+
+function makeChartOpts(isMain){
+  return {
+    responsive:true, maintainAspectRatio:false, animation:false,
+    plugins:{
+      legend:{display:false},
+      tooltip:{
+        backgroundColor:'#2c2c2e',
+        borderColor:'rgba(255,255,255,0.15)',
+        borderWidth:1,
+        titleColor:'#aeaeb2',
+        bodyColor:'#f2f2f7',
+        bodyFont:{family:"'DM Mono',monospace",size:13,weight:'500'},
+        padding:10,
+        callbacks:{label:c=>'¥'+fmt(c.parsed.y)},
+        displayColors:false,
+      }
+    },
+    scales:{
+      x:{
+        ticks:{color:'#6d6d72',font:{size:10},maxTicksLimit:isMain?5:6},
+        grid:{display:false},
+        border:{display:false},
+      },
+      y:{
+        position:'right',
+        ticks:{color:'#aeaeb2',font:{family:"'DM Mono',monospace",size:10},callback:v=>'¥'+fmt(v)},
+        grid:{color:'rgba(255,255,255,0.06)'},
+        border:{display:false},
+      }
+    }
+  };
+}
+
+// ── Tabs ────────────────────────────────────────────────────────
+document.getElementById('tab-bar').addEventListener('click',e=>{
+  const tab=e.target.closest('[data-tab]'); if(!tab)return;
+  currentTab=tab.dataset.tab;
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.tab===currentTab));
   render();
 });
+function filtered(){ return currentTab==='all'?assets:assets.filter(a=>a.type===currentTab); }
 
-function filtered() {
-  return currentTab === 'all' ? assets : assets.filter(a => a.type === currentTab);
-}
+// ── Render ──────────────────────────────────────────────────────
+function render(){
+  const list=filtered();
+  const tCurr=list.reduce((s,a)=>s+a.price*a.qty,0);
+  const tCost=list.reduce((s,a)=>s+a.cost*a.qty,0);
+  const tPnl=tCurr-tCost, tPct=tCost>0?tPnl/tCost*100:0;
+  const tDay=list.reduce((s,a)=>s+(a.price-a.prev)*a.qty,0);
+  const tPrevTot=list.reduce((s,a)=>s+a.prev*a.qty,0);
+  const tDayPct=tPrevTot>0?tDay/tPrevTot*100:0;
 
-// ── Render ────────────────────────────────────────────────────
-function render() {
-  const list = filtered();
-  const tCurr = list.reduce((s, a) => s + a.price * a.qty, 0);
-  const tCost = list.reduce((s, a) => s + a.cost * a.qty, 0);
-  const tPnl = tCurr - tCost, tPct = tCost > 0 ? tPnl / tCost * 100 : 0;
-  const tDay = list.reduce((s, a) => s + (a.price - a.prev) * a.qty, 0);
-  const tPrevTot = list.reduce((s, a) => s + a.prev * a.qty, 0);
-  const tDayPct = tPrevTot > 0 ? tDay / tPrevTot * 100 : 0;
+  const groups={};
+  list.forEach(a=>{(groups[a.account]=groups[a.account]||[]).push(a);});
+  const assetRows=currentTab==='all'
+    ?Object.entries(groups).map(([acc,items])=>`<div class="group-title">${acc}</div>${items.map(assetCardHTML).join('')}`).join('')
+    :list.map(assetCardHTML).join('');
 
-  // Group by account
-  const groups = {};
-  list.forEach(a => { (groups[a.account] = groups[a.account] || []).push(a); });
-
-  const assetRows = currentTab === 'all'
-    ? Object.entries(groups).map(([acc, items]) =>
-        `<div class="account-group-title">${acc}</div>${items.map(assetCardHTML).join('')}`
-      ).join('')
-    : list.map(assetCardHTML).join('');
-
-  document.getElementById('main-content').innerHTML = `
+  document.getElementById('main-content').innerHTML=`
     <div class="summary-card">
-      <div class="summary-label">評価額合計</div>
-      <div class="summary-total">¥${fmt(tCurr)}</div>
-      <div class="summary-grid">
-        <div class="summary-metric">
-          <div class="m-label">評価損益</div>
-          <div class="m-value ${cc(tPnl)}">${sign(tPnl)}¥${fmt(Math.abs(tPnl))}</div>
-          <div style="font-size:11px;font-family:var(--mono);margin-top:2px;" class="${cc(tPct)}">${sign(tPct)}${tPct.toFixed(2)}%</div>
+      <div class="s-label">評価額合計</div>
+      <div class="s-total">¥${fmt(tCurr)}</div>
+      <div class="s-grid">
+        <div class="s-metric">
+          <div class="sm-label">評価損益</div>
+          <div class="sm-val ${cc(tPnl)}">${sign(tPnl)}¥${fmt(Math.abs(tPnl))}</div>
+          <div class="sm-sub ${cc(tPct)}">${sign(tPct)}${tPct.toFixed(2)}%</div>
         </div>
-        <div class="summary-metric">
-          <div class="m-label">前日比</div>
-          <div class="m-value ${cc(tDay)}">${sign(tDay)}¥${fmt(Math.abs(tDay))}</div>
-          <div style="font-size:11px;font-family:var(--mono);margin-top:2px;" class="${cc(tDayPct)}">${sign(tDayPct)}${tDayPct.toFixed(2)}%</div>
+        <div class="s-metric">
+          <div class="sm-label">前日比</div>
+          <div class="sm-val ${cc(tDay)}">${sign(tDay)}¥${fmt(Math.abs(tDay))}</div>
+          <div class="sm-sub ${cc(tDayPct)}">${sign(tDayPct)}${tDayPct.toFixed(2)}%</div>
         </div>
       </div>
-      <div style="display:flex;gap:5px;margin-top:12px;flex-wrap:wrap;" id="main-period-row">
-        ${PERIODS.map(p => `<button class="period-btn main-period-btn${p.key===mainPeriod?' active':''}" data-period="${p.key}" onclick="onMainPeriod('${p.key}')">${p.label}</button>`).join('')}
+      <div class="period-strip" id="main-period-strip">
+        ${PERIODS.map(p=>`<button class="pb${p.key===mainPeriod?' active':''}" onclick="onMainPeriod('${p.key}')">${p.label}</button>`).join('')}
       </div>
       <div class="chart-wrap">
-        <canvas id="main-chart" role="img" aria-label="ポートフォリオ評価額推移">評価額推移</canvas>
+        <div class="chart-loading" id="main-chart-loading"><i class="ti ti-loader" style="animation:spin 1s linear infinite"></i>読み込み中</div>
+        <canvas id="main-chart" style="display:none" role="img" aria-label="ポートフォリオ評価額推移">評価額推移</canvas>
       </div>
     </div>
     <div class="update-row">
-      <button id="refresh-btn" class="update-btn" onclick="refreshPrices()"><i class="ti ti-refresh" style="font-size:13px"></i>&nbsp;価格を更新</button>
+      <button id="refresh-btn" class="update-btn" onclick="refreshPrices()">
+        <i class="ti ti-refresh" style="font-size:13px"></i>価格を更新
+      </button>
     </div>
-    ${list.length === 0 ? `<div class="empty-state"><i class="ti ti-chart-bar"></i><p>右下の＋ボタンから<br>銘柄を追加してください</p></div>` : assetRows}
+    ${list.length===0?`<div class="empty-state"><i class="ti ti-chart-bar"></i><p>右下の＋ボタンから<br>銘柄を追加してください</p></div>`:assetRows}
   `;
 
-  if (list.length > 0) {
-    list.forEach(ensureHistory);
-    setTimeout(() => drawMainChart(list, mainPeriod), 0);
-  }
-
-  document.getElementById('last-updated').textContent =
-    new Date().toLocaleTimeString('ja', { hour: '2-digit', minute: '2-digit' });
+  if(list.length>0) setTimeout(()=>loadMainChart(list,mainPeriod),0);
+  document.getElementById('last-updated').textContent=new Date().toLocaleTimeString('ja',{hour:'2-digit',minute:'2-digit'});
 }
 
-function assetCardHTML(a) {
-  const c = calcAsset(a);
+function assetCardHTML(a){
+  const c=calcAsset(a);
   return `
   <div class="asset-card" onclick="openDetail('${a.id}')">
-    <div class="asset-top">
+    <div class="ac-top">
       <div>
-        <div class="asset-name">${a.name}</div>
-        <div class="asset-account-label">${a.account}${a.ticker ? ' · ' + a.ticker : ''}</div>
+        <div class="ac-name">${a.name}</div>
+        <div class="ac-sub">${a.account}${a.ticker?' · '+a.ticker:''}</div>
       </div>
-      <span class="type-badge badge-${a.type}">${TYPE_LABEL[a.type]}</span>
+      <span class="badge badge-${a.type}">${TYPE_LABEL[a.type]}</span>
     </div>
-    <div class="asset-mid">
+    <div class="ac-mid">
       <div>
-        <div class="asset-price">¥${fmt(a.price)}</div>
-        <div class="asset-eval">評価額 ¥${fmt(c.current)}</div>
+        <div class="ac-price">¥${fmt(a.price)}</div>
+        <div class="ac-eval">評価額 ¥${fmt(c.current)}</div>
       </div>
-      <div>
-        <div class="asset-pnl-value ${cc(c.pnl)}">${sign(c.pnl)}¥${fmt(Math.abs(c.pnl))}</div>
-        <div class="asset-pnl-pct ${cc(c.pnlPct)}">${sign(c.pnlPct)}${c.pnlPct.toFixed(2)}%</div>
+      <div class="ac-pnl">
+        <div class="ac-pnl-val ${cc(c.pnl)}">${sign(c.pnl)}¥${fmt(Math.abs(c.pnl))}</div>
+        <div class="ac-pnl-pct ${cc(c.pnlPct)}">${sign(c.pnlPct)}${c.pnlPct.toFixed(2)}%</div>
       </div>
     </div>
-    <div class="asset-day">
-      <span class="asset-day-label">前日比</span>
-      <span class="${cc(c.dayPnl)}" style="font-family:var(--mono);font-size:12px;">${sign(c.dayPnl)}¥${fmt(Math.abs(c.dayPnl))} (${sign(c.dayPct)}${c.dayPct.toFixed(2)}%)</span>
+    <div class="ac-day">
+      <span class="ac-day-label">前日比</span>
+      <span class="${cc(c.dayPnl)}" style="font-family:var(--mono);font-weight:700">
+        ${sign(c.dayPnl)}¥${fmt(Math.abs(c.dayPnl))} (${sign(c.dayPct)}${c.dayPct.toFixed(2)}%)
+      </span>
     </div>
   </div>`;
 }
 
-// ── Charts ────────────────────────────────────────────────────
-function chartColor(isUp) {
-  return { border: isUp ? '#ef5e5e' : '#5b9cf6', bg: isUp ? 'rgba(239,94,94,0.08)' : 'rgba(91,156,246,0.08)' };
-}
+// ── Main chart ─────────────────────────────────────────────────
+async function loadMainChart(list, periodKey){
+  const ctx=document.getElementById('main-chart');
+  const loading=document.getElementById('main-chart-loading');
+  if(!ctx)return;
+  if(mainChart){mainChart.destroy();mainChart=null;}
+  if(loading) loading.style.display='flex';
+  ctx.style.display='none';
 
-let mainPeriod = '1M';
-
-function drawMainChart(list, periodKey) {
-  if (periodKey) mainPeriod = periodKey;
-  const ctx = document.getElementById('main-chart');
-  if (!ctx) return;
-  if (mainChart) { mainChart.destroy(); mainChart = null; }
-
-  // Use first asset's slice as index, sum all assets at same points
-  list.forEach(ensureHistory);
-  const ref = sliceHistory(list[0], mainPeriod);
-  const labels = ref.map(r => r.label);
-  const totals = ref.map((r, i) => {
-    return list.reduce((s, a) => {
-      const sl = sliceHistory(a, mainPeriod);
-      return s + (sl[i]?.p ?? a.price) * a.qty;
-    }, 0);
-  });
-
-  const isUp = totals[totals.length - 1] >= totals[0];
-  const col = chartColor(isUp);
-  mainChart = new Chart(ctx, {
-    type: 'line',
-    data: { labels, datasets: [{ data: totals, borderColor: col.border, borderWidth: 1.5, pointRadius: 0, tension: 0.3, fill: true, backgroundColor: col.bg }] },
-    options: {
-      responsive: true, maintainAspectRatio: false, animation: false,
-      plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => '¥' + fmt(c.parsed.y) }, displayColors: false } },
-      scales: { x: { ticks: { color: '#5a5754', font: { size: 10 }, maxTicksLimit: 6 }, grid: { display: false } }, y: { display: true, position: 'right', grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#5a5754', font: { size: 10 }, callback: v => '¥' + fmt(v) } } }
+  try{
+    // For main chart, use simulated aggregated totals (real ticker data is per-asset only)
+    list.forEach(a=>simulateHistory(a));
+    const dayCount={'1D':0,'1W':7,'1M':30,'3M':90,'1Y':365,'5Y':1825}[periodKey]||30;
+    let points;
+    if(periodKey==='1D'){
+      points=list[0]._sim.intra.map((h,i)=>({label:h.t,val:list.reduce((s,a)=>s+a._sim.intra[i].c*a.qty,0)}));
+    } else {
+      const ref=list[0]._sim.daily;
+      const slice=ref.slice(-dayCount);
+      const step=Math.max(1,Math.floor(slice.length/60));
+      points=slice.filter((_,i)=>i%step===0||i===slice.length-1).map((h,ri)=>{
+        const gi=ref.length-dayCount+ri*step;
+        const val=list.reduce((s,a)=>s+(a._sim.daily[Math.min(gi,a._sim.daily.length-1)]?.c??a.price)*a.qty,0);
+        return {label:fmtDate(h.t*1000,periodKey),val};
+      });
     }
-  });
-
-  // Update period buttons
-  document.querySelectorAll('.main-period-btn').forEach(b => {
-    b.classList.toggle('active', b.dataset.period === mainPeriod);
-  });
+    const isUp=points[points.length-1].val>=points[0].val;
+    const col=chartCol(isUp);
+    if(!document.getElementById('main-chart'))return;
+    mainChart=new Chart(ctx,{
+      type:'line',
+      data:{labels:points.map(p=>p.label),datasets:[{data:points.map(p=>p.val),borderColor:col.line,borderWidth:1.5,pointRadius:0,tension:.3,fill:true,backgroundColor:col.fill}]},
+      options:makeChartOpts(true)
+    });
+    if(loading) loading.style.display='none';
+    ctx.style.display='block';
+  } catch(e){ if(loading) loading.innerHTML='<i class="ti ti-alert-circle"></i> 読み込み失敗'; }
 }
 
-function drawDetailChart(a, periodKey) {
-  const ctx = document.getElementById('detail-chart');
-  if (!ctx) return;
-  if (detailChart) { detailChart.destroy(); detailChart = null; }
-  ensureHistory(a);
-  const slice = sliceHistory(a, periodKey);
-  const isUp = slice[slice.length - 1].p >= slice[0].p;
-  const col = chartColor(isUp);
-  detailChart = new Chart(ctx, {
-    type: 'line',
-    data: { labels: slice.map(h => h.label), datasets: [{ data: slice.map(h => h.p), borderColor: col.border, borderWidth: 2, pointRadius: 0, tension: 0.3, fill: true, backgroundColor: col.bg }] },
-    options: {
-      responsive: true, maintainAspectRatio: false, animation: false,
-      plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => '¥' + fmt(c.parsed.y) }, displayColors: false } },
-      scales: { x: { ticks: { color: '#5a5754', font: { size: 10 }, maxTicksLimit: 6 }, grid: { display: false } }, y: { position: 'right', grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#5a5754', font: { size: 10 }, callback: v => '¥' + fmt(v) } } }
-    }
-  });
+function onMainPeriod(key){
+  mainPeriod=key;
+  document.querySelectorAll('#main-period-strip .pb').forEach(b=>b.classList.toggle('active',b.textContent===PERIODS.find(p=>p.key===key)?.label));
+  loadMainChart(filtered(),key);
 }
 
-// ── Detail sheet ──────────────────────────────────────────────
-function openDetail(id) {
-  const a = assets.find(x => x.id === id);
-  if (!a) return;
-  const c = calcAsset(a);
-  document.getElementById('detail-content').innerHTML = `
+// ── Detail sheet ────────────────────────────────────────────────
+function openDetail(id){
+  const a=assets.find(x=>x.id===id); if(!a)return;
+  const c=calcAsset(a);
+  document.getElementById('detail-content').innerHTML=`
+    <div class="sheet-handle"></div>
     <div class="sheet-title">
-      <span style="font-size:15px">${a.name}</span>
+      <span style="font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:240px">${a.name}</span>
       <button class="close-btn" onclick="closeSheet('detail-sheet')"><i class="ti ti-x"></i></button>
     </div>
-    <div style="margin-bottom:12px;display:flex;gap:8px;align-items:center;">
-      <span class="type-badge badge-${a.type}">${TYPE_LABEL[a.type]}</span>
-      <span style="font-size:12px;color:var(--text3)">${a.account}${a.ticker ? ' · ' + a.ticker : ''}</span>
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:14px;flex-wrap:wrap">
+      <span class="badge badge-${a.type}">${TYPE_LABEL[a.type]}</span>
+      <span style="font-size:12px;color:var(--text3)">${a.account}${a.ticker?' · '+a.ticker:''}</span>
+      ${!a.ticker?'<span class="sim-note">チャートはシミュレーション</span>':''}
     </div>
-    <div class="period-row" id="period-row">
-      ${PERIODS.map((p,i) => `<button class="period-btn${i===2?' active':''}" onclick="setPeriod(this,'${p.key}','${id}')">${p.label}</button>`).join('')}
+    <div class="period-strip" id="period-row">
+      ${PERIODS.map((p,i)=>`<button class="pb${i===2?' active':''}" onclick="setPeriod(this,'${p.key}','${id}')">${p.label}</button>`).join('')}
     </div>
-    <div style="position:relative;width:100%;height:180px;margin-bottom:4px">
-      <canvas id="detail-chart" role="img" aria-label="${a.name}の価格推移">価格推移</canvas>
+    <div class="detail-chart-wrap">
+      <div class="chart-loading" id="chart-loading">
+        <i class="ti ti-loader" style="animation:spin 1s linear infinite"></i>読み込み中
+      </div>
+      <canvas id="detail-chart" style="display:none" role="img" aria-label="${a.name}の価格推移">価格推移</canvas>
     </div>
     <div class="detail-grid">
-      <div class="detail-metric"><div class="dm-label">現在価格</div><div class="dm-value">¥${fmt(a.price)}</div></div>
-      <div class="detail-metric"><div class="dm-label">前日比</div><div class="dm-value ${cc(c.dayPct)}">${sign(c.dayPct)}${c.dayPct.toFixed(2)}%</div></div>
-      <div class="detail-metric"><div class="dm-label">評価損益</div><div class="dm-value ${cc(c.pnl)}">${sign(c.pnl)}¥${fmt(Math.abs(c.pnl))}</div></div>
-      <div class="detail-metric"><div class="dm-label">損益率</div><div class="dm-value ${cc(c.pnlPct)}">${sign(c.pnlPct)}${c.pnlPct.toFixed(2)}%</div></div>
-      <div class="detail-metric"><div class="dm-label">評価額</div><div class="dm-value">¥${fmt(c.current)}</div></div>
-      <div class="detail-metric"><div class="dm-label">取得額</div><div class="dm-value">¥${fmt(c.cost)}</div></div>
-      <div class="detail-metric"><div class="dm-label">取得単価</div><div class="dm-value">¥${fmt(a.cost)}</div></div>
-      <div class="detail-metric"><div class="dm-label">保有数量</div><div class="dm-value">${fmt(a.qty)}</div></div>
+      <div class="dm"><div class="dm-label">現在価格</div><div class="dm-val">¥${fmt(a.price)}</div></div>
+      <div class="dm"><div class="dm-label">前日比</div><div class="dm-val ${cc(c.dayPct)}">${sign(c.dayPct)}${c.dayPct.toFixed(2)}%</div></div>
+      <div class="dm"><div class="dm-label">評価損益</div><div class="dm-val ${cc(c.pnl)}">${sign(c.pnl)}¥${fmt(Math.abs(c.pnl))}</div></div>
+      <div class="dm"><div class="dm-label">損益率</div><div class="dm-val ${cc(c.pnlPct)}">${sign(c.pnlPct)}${c.pnlPct.toFixed(2)}%</div></div>
+      <div class="dm"><div class="dm-label">評価額</div><div class="dm-val">¥${fmt(c.current)}</div></div>
+      <div class="dm"><div class="dm-label">取得額</div><div class="dm-val">¥${fmt(c.cost)}</div></div>
+      <div class="dm"><div class="dm-label">取得単価</div><div class="dm-val">¥${fmt(a.cost)}</div></div>
+      <div class="dm"><div class="dm-label">保有数量</div><div class="dm-val">${fmt(a.qty)}</div></div>
     </div>
-    <div class="btn-row" style="margin-top:14px">
+    <div class="btn-row">
       <button class="btn-sec" onclick="editAsset('${id}')"><i class="ti ti-edit"></i> 編集</button>
       <button class="btn-sec btn-danger" onclick="deleteAsset('${id}')"><i class="ti ti-trash"></i> 削除</button>
     </div>
   `;
   document.getElementById('detail-sheet').classList.add('open');
-  setTimeout(() => drawDetailChart(a, '1M'), 50);
+  setTimeout(()=>loadDetailChart(a,'1M'),80);
 }
 
-function onMainPeriod(key) {
-  mainPeriod = key;
-  const list = filtered();
-  list.forEach(ensureHistory);
-  drawMainChart(list, key);
-}
-
-function setPeriod(btn, key, id) {
-  document.querySelectorAll('#period-row .period-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  drawDetailChart(assets.find(x => x.id === id), key);
-}
-
-// ── Add / Edit ────────────────────────────────────────────────
-document.getElementById('fab-btn').addEventListener('click', () => {
-  editingId = null;
-  document.getElementById('add-sheet-title').textContent = '銘柄を追加';
-  ['f-name', 'f-ticker', 'f-account', 'f-cost', 'f-qty', 'f-price', 'f-prev'].forEach(id => document.getElementById(id).value = '');
-  document.getElementById('f-type').value = 'fund';
-  document.getElementById('add-sheet').classList.add('open');
-});
-
-function editAsset(id) {
-  const a = assets.find(x => x.id === id);
-  if (!a) return;
-  editingId = id;
-  document.getElementById('add-sheet-title').textContent = '銘柄を編集';
-  document.getElementById('f-type').value = a.type;
-  document.getElementById('f-name').value = a.name;
-  document.getElementById('f-ticker').value = a.ticker || '';
-  document.getElementById('f-account').value = a.account;
-  document.getElementById('f-cost').value = a.cost;
-  document.getElementById('f-qty').value = a.qty;
-  document.getElementById('f-price').value = a.price;
-  document.getElementById('f-prev').value = a.prev;
-  closeSheet('detail-sheet');
-  document.getElementById('add-sheet').classList.add('open');
-}
-
-function saveAsset() {
-  const name = document.getElementById('f-name').value.trim();
-  const account = document.getElementById('f-account').value.trim();
-  if (!name) { alert('銘柄名を入力してください'); return; }
-  const a = {
-    id: editingId || Date.now().toString(),
-    type: document.getElementById('f-type').value,
-    name,
-    ticker: document.getElementById('f-ticker').value.trim(),
-    account: account || '未分類',
-    cost: parseFloat(document.getElementById('f-cost').value) || 0,
-    qty: parseFloat(document.getElementById('f-qty').value) || 0,
-    price: parseFloat(document.getElementById('f-price').value) || 0,
-    prev: parseFloat(document.getElementById('f-prev').value) || 0,
-    _history: null
-  };
-  if (editingId) {
-    assets = assets.map(x => x.id === editingId ? { ...a, _history: x._history } : x);
-  } else {
-    assets.push(a);
+async function loadDetailChart(a, periodKey){
+  const ctx=document.getElementById('detail-chart');
+  const loading=document.getElementById('chart-loading');
+  if(!ctx)return;
+  if(detailChart){detailChart.destroy();detailChart=null;}
+  if(loading) loading.style.display='flex';
+  ctx.style.display='none';
+  try{
+    const data=await getHistory(a,periodKey);
+    if(!document.getElementById('detail-chart'))return;
+    const isUp=data[data.length-1].c>=data[0].c;
+    const col=chartCol(isUp);
+    detailChart=new Chart(ctx,{
+      type:'line',
+      data:{labels:data.map(h=>h.label),datasets:[{data:data.map(h=>h.c),borderColor:col.line,borderWidth:2,pointRadius:0,tension:.3,fill:true,backgroundColor:col.fill}]},
+      options:makeChartOpts(false)
+    });
+    if(loading) loading.style.display='none';
+    ctx.style.display='block';
+  } catch(e){
+    if(loading) loading.innerHTML='<i class="ti ti-alert-circle"></i> データ取得失敗';
   }
-  save();
-  closeSheet('add-sheet');
-  render();
 }
 
-function deleteAsset(id) {
-  if (!confirm('削除しますか？')) return;
-  assets = assets.filter(a => a.id !== id);
-  save();
-  closeSheet('detail-sheet');
-  render();
+function setPeriod(btn,key,id){
+  document.querySelectorAll('#period-row .pb').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  loadDetailChart(assets.find(x=>x.id===id),key);
 }
 
-// ── Real price fetch (Yahoo Finance via allorigins proxy) ──────
-async function fetchYahooPrice(ticker) {
-  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(ticker)}?interval=1d&range=2d`;
-  const proxy = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
-  const res = await fetch(proxy, { signal: AbortSignal.timeout(8000) });
-  if (!res.ok) throw new Error('proxy error');
-  const json = await res.json();
-  const data = JSON.parse(json.contents);
-  const meta = data?.chart?.result?.[0]?.meta;
-  if (!meta) throw new Error('no data');
-  const price = meta.regularMarketPrice;
-  const prev  = meta.chartPreviousClose ?? meta.previousClose ?? price;
-  return { price, prev };
-}
-
-async function refreshPrices() {
-  const btn = document.getElementById('refresh-btn');
-  if (btn) { btn.disabled = true; btn.innerHTML = '<i class="ti ti-loader" style="font-size:13px;animation:spin 1s linear infinite"></i>&nbsp;更新中…'; }
-
-  const tickered = assets.filter(a => a.ticker);
-  const noTicker = assets.filter(a => !a.ticker);
-
-  const results = await Promise.allSettled(
-    tickered.map(a => fetchYahooPrice(a.ticker).then(r => ({ id: a.id, ...r })))
-  );
-
-  let updated = 0, failed = [];
-  results.forEach((r, i) => {
-    const a = tickered[i];
-    if (r.status === 'fulfilled') {
-      const { price, prev } = r.value;
-      assets = assets.map(x => x.id === a.id ? { ...x, price, prev, _history: null } : x);
+// ── Price refresh ───────────────────────────────────────────────
+async function refreshPrices(){
+  const btn=document.getElementById('refresh-btn');
+  if(btn){btn.disabled=true;btn.innerHTML='<i class="ti ti-loader" style="font-size:13px;animation:spin 1s linear infinite"></i> 更新中…';}
+  const tickered=assets.filter(a=>a.ticker);
+  const noTicker=assets.filter(a=>!a.ticker);
+  const results=await Promise.allSettled(tickered.map(a=>fetchYahooPrice(a.ticker)));
+  let updated=0, failed=[];
+  results.forEach((r,i)=>{
+    if(r.status==='fulfilled'){
+      const {price,prev}=r.value;
+      assets=assets.map(x=>x.id===tickered[i].id?{...x,price,prev,_sim:null}:x);
+      Object.keys(histCache).filter(k=>k.startsWith(tickered[i].ticker+'_')).forEach(k=>delete histCache[k]);
       updated++;
-    } else {
-      failed.push(a.name);
-    }
+    } else { failed.push(tickered[i].name); }
   });
-
-  save();
-  render();
-
-  let msg = `${updated}件を更新しました`;
-  if (noTicker.length) msg += `\n（ティッカー未設定 ${noTicker.length}件はスキップ）`;
-  if (failed.length)   msg += `\n取得失敗: ${failed.join(', ')}`;
+  saveAssets(); render();
+  let msg=`${updated}件を更新しました`;
+  if(noTicker.length) msg+=`\nティッカー未設定 ${noTicker.length}件はスキップ`;
+  if(failed.length)   msg+=`\n失敗: ${failed.join(', ')}`;
   showToast(msg);
 }
 
-function showToast(msg) {
-  let t = document.getElementById('toast');
-  if (!t) {
-    t = document.createElement('div');
-    t.id = 'toast';
-    t.style.cssText = 'position:fixed;bottom:calc(env(safe-area-inset-bottom,0px) + 90px);left:50%;transform:translateX(-50%);background:#2a2a2a;color:#f0ede8;font-size:13px;padding:10px 18px;border-radius:20px;border:0.5px solid rgba(255,255,255,0.12);z-index:200;white-space:pre-line;text-align:center;max-width:80vw;line-height:1.5;transition:opacity 0.3s;';
-    document.body.appendChild(t);
-  }
-  t.textContent = msg;
-  t.style.opacity = '1';
-  clearTimeout(t._timer);
-  t._timer = setTimeout(() => { t.style.opacity = '0'; }, 3000);
-}
-
-// ── Sheet helpers ─────────────────────────────────────────────
-function closeSheet(id) { document.getElementById(id).classList.remove('open'); }
-
-document.querySelectorAll('.sheet-overlay').forEach(el => {
-  el.addEventListener('click', e => { if (e.target === el) el.classList.remove('open'); });
+// ── Add / Edit ──────────────────────────────────────────────────
+document.getElementById('fab-btn').addEventListener('click',()=>{
+  editingId=null;
+  document.getElementById('add-sheet-title').textContent='銘柄を追加';
+  ['f-name','f-ticker','f-account','f-cost','f-qty','f-price','f-prev'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('f-type').value='fund';
+  document.getElementById('add-sheet').classList.add('open');
 });
 
-// ── Service Worker ────────────────────────────────────────────
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('./sw.js').catch(() => {});
+function editAsset(id){
+  const a=assets.find(x=>x.id===id); if(!a)return;
+  editingId=id;
+  document.getElementById('add-sheet-title').textContent='銘柄を編集';
+  document.getElementById('f-type').value=a.type;
+  document.getElementById('f-name').value=a.name;
+  document.getElementById('f-ticker').value=a.ticker||'';
+  document.getElementById('f-account').value=a.account;
+  document.getElementById('f-cost').value=a.cost;
+  document.getElementById('f-qty').value=a.qty;
+  document.getElementById('f-price').value=a.price;
+  document.getElementById('f-prev').value=a.prev;
+  closeSheet('detail-sheet');
+  document.getElementById('add-sheet').classList.add('open');
 }
 
-// ── Init ──────────────────────────────────────────────────────
+function saveAsset(){
+  const name=document.getElementById('f-name').value.trim();
+  if(!name){alert('銘柄名を入力してください');return;}
+  const a={
+    id:editingId||Date.now().toString(),
+    type:document.getElementById('f-type').value,
+    name,
+    ticker:document.getElementById('f-ticker').value.trim(),
+    account:document.getElementById('f-account').value.trim()||'未分類',
+    cost:parseFloat(document.getElementById('f-cost').value)||0,
+    qty:parseFloat(document.getElementById('f-qty').value)||0,
+    price:parseFloat(document.getElementById('f-price').value)||0,
+    prev:parseFloat(document.getElementById('f-prev').value)||0,
+    _sim:null,
+  };
+  if(editingId){
+    assets=assets.map(x=>x.id===editingId?a:x);
+    Object.keys(histCache).filter(k=>k.startsWith(a.ticker+'_')).forEach(k=>delete histCache[k]);
+  } else { assets.push(a); }
+  saveAssets(); closeSheet('add-sheet'); render();
+}
+
+function deleteAsset(id){
+  if(!confirm('削除しますか？'))return;
+  assets=assets.filter(a=>a.id!==id);
+  saveAssets(); closeSheet('detail-sheet'); render();
+}
+
+// ── Helpers ─────────────────────────────────────────────────────
+function closeSheet(id){ document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.sheet-overlay').forEach(el=>{
+  el.addEventListener('click',e=>{ if(e.target===el) el.classList.remove('open'); });
+});
+
+function showToast(msg){
+  let t=document.getElementById('toast');
+  if(!t){
+    t=document.createElement('div'); t.id='toast';
+    t.style.cssText='position:fixed;bottom:calc(env(safe-area-inset-bottom,0px)+92px);left:50%;transform:translateX(-50%);background:#2c2c2e;color:#f2f2f7;font-size:13px;padding:10px 18px;border-radius:20px;border:0.5px solid rgba(255,255,255,0.15);z-index:200;white-space:pre-line;text-align:center;max-width:82vw;line-height:1.6;transition:opacity .3s;font-weight:500;';
+    document.body.appendChild(t);
+  }
+  t.textContent=msg; t.style.opacity='1';
+  clearTimeout(t._timer); t._timer=setTimeout(()=>t.style.opacity='0',3500);
+}
+
+if('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(()=>{});
 render();
 </script>
 </body>
