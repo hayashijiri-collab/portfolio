@@ -253,17 +253,24 @@ select{
       <select id="f-type"><option value="fund">投資信託</option><option value="us">米株</option><option value="jp">日本株</option></select>
     </div>
     <div class="form-group"><label class="form-label">銘柄名</label><input type="text" id="f-name" placeholder="例: eMAXIS Slim 全世界株式"></div>
-    <div class="form-group"><label class="form-label">ティッカー / コード（価格自動取得に必要）</label><input type="text" id="f-ticker" placeholder="米株: AAPL　日本株: 7203.T"></div>
-    <div class="form-group"><label class="form-label">口座名</label><input type="text" id="f-account" placeholder="例: 楽天証券 NISA"></div>
+    <div class="form-group">
+      <label class="form-label">ティッカー / コード</label>
+      <div style="display:flex;gap:8px;align-items:stretch">
+        <input type="text" id="f-ticker" placeholder="米株: AAPL　日本株: 7203.T" style="flex:1">
+        <button id="fetch-price-btn" onclick="fetchPriceForForm()" style="padding:0 14px;background:var(--accent);color:#111;border:none;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0">取得</button>
+      </div>
+      <div id="fetch-status" style="font-size:11px;color:var(--text3);margin-top:6px;min-height:16px"></div>
+    </div>
     <div class="form-row">
       <div class="form-group"><label class="form-label">取得単価</label><input type="number" id="f-cost" placeholder="0"></div>
-      <div class="form-group"><label class="form-label">保有数量</label><input type="number" id="f-qty" placeholder="0"></div>
+      <div class="form-group"><label class="form-label">保有数量</label><input type="number" id="f-qty" placeholder="0" oninput="updateFormTotal()"></div>
     </div>
-    <div class="form-row">
-      <div class="form-group"><label class="form-label">現在価格</label><input type="number" id="f-price" placeholder="0"></div>
-      <div class="form-group"><label class="form-label">前日終値</label><input type="number" id="f-prev" placeholder="0"></div>
+    <div id="form-total-row" style="display:none;background:var(--surface2);border-radius:10px;padding:12px 14px;margin-bottom:13px;border:0.5px solid var(--border)">
+      <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;font-weight:600;margin-bottom:4px">取得総額（概算）</div>
+      <div id="form-total" style="font-size:18px;font-weight:700;font-family:var(--mono);color:var(--text)">—</div>
+      <div style="font-size:10px;color:var(--text3);margin-top:2px">現在価格 <span id="form-current-price" style="color:var(--text2);font-family:var(--mono)">—</span></div>
     </div>
-    <button class="btn-primary" onclick="saveAsset()">保存する</button>
+    <button class="btn-primary" id="save-asset-btn" onclick="saveAsset()">保存する</button>
   </div>
 </div>
 
@@ -276,6 +283,7 @@ select{
 <script>
 // ── State ──────────────────────────────────────────────────────
 let assets = JSON.parse(localStorage.getItem('portfolio_v5') || 'null');
+window._formPrice=0; window._formPrev=0;
 let currentTab='all', editingId=null, mainPeriod='1M';
 let mainChart=null, detailChart=null;
 const histCache={};
@@ -454,10 +462,13 @@ function render(){
   const tPrevTot=list.reduce((s,a)=>s+a.prev*a.qty,0);
   const tDayPct=tPrevTot>0?tDay/tPrevTot*100:0;
 
-  const groups={};
-  list.forEach(a=>{(groups[a.account]=groups[a.account]||[]).push(a);});
+  // Group by type when viewing all, otherwise flat list
+  const TYPE_ORDER=['fund','us','jp'];
   const assetRows=currentTab==='all'
-    ?Object.entries(groups).map(([acc,items])=>`<div class="group-title">${acc}</div>${items.map(assetCardHTML).join('')}`).join('')
+    ?TYPE_ORDER.filter(t=>list.some(a=>a.type===t)).map(t=>{
+        const items=list.filter(a=>a.type===t);
+        return `<div class="group-title">${TYPE_LABEL[t]}</div>${items.map(assetCardHTML).join('')}`;
+      }).join('')
     :list.map(assetCardHTML).join('');
 
   document.getElementById('main-content').innerHTML=`
@@ -503,7 +514,7 @@ function assetCardHTML(a){
     <div class="ac-top">
       <div>
         <div class="ac-name">${a.name}</div>
-        <div class="ac-sub">${a.account}${a.ticker?' · '+a.ticker:''}</div>
+        <div class="ac-sub">${a.ticker||'ティッカーなし'}</div>
       </div>
       <span class="badge badge-${a.type}">${TYPE_LABEL[a.type]}</span>
     </div>
@@ -590,7 +601,7 @@ function openDetail(id){
     </div>
     <div style="display:flex;gap:8px;align-items:center;margin-bottom:14px;flex-wrap:wrap">
       <span class="badge badge-${a.type}">${TYPE_LABEL[a.type]}</span>
-      <span style="font-size:12px;color:var(--text3)">${a.account}${a.ticker?' · '+a.ticker:''}</span>
+      <span style="font-size:12px;color:var(--text3)">${a.ticker||''}</span>
       ${!a.ticker?'<span class="sim-note">チャートはシミュレーション</span>':''}
     </div>
     <div class="period-strip" id="period-row">
@@ -669,7 +680,7 @@ async function refreshPrices(){
   });
   saveAssets(); render();
   let msg=`${updated}件を更新しました`;
-  if(noTicker.length) msg+=`\nティッカー未設定 ${noTicker.length}件はスキップ`;
+  if(noTicker.length) msg+=`\nティッカー未設定 ${noTicker.length}件はスキップ（手動管理）`;
   if(failed.length)   msg+=`\n失敗: ${failed.join(', ')}`;
   showToast(msg);
 }
@@ -678,40 +689,93 @@ async function refreshPrices(){
 document.getElementById('fab-btn').addEventListener('click',()=>{
   editingId=null;
   document.getElementById('add-sheet-title').textContent='銘柄を追加';
-  ['f-name','f-ticker','f-account','f-cost','f-qty','f-price','f-prev'].forEach(id=>document.getElementById(id).value='');
+  ['f-name','f-ticker','f-cost','f-qty'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('f-type').value='fund';
+  document.getElementById('fetch-status').textContent='';
+  document.getElementById('form-total-row').style.display='none';
+  window._formPrice=0; window._formPrev=0;
   document.getElementById('add-sheet').classList.add('open');
 });
 
 function editAsset(id){
   const a=assets.find(x=>x.id===id); if(!a)return;
   editingId=id;
+  window._formPrice=a.price||0;
+  window._formPrev=a.prev||0;
   document.getElementById('add-sheet-title').textContent='銘柄を編集';
   document.getElementById('f-type').value=a.type;
   document.getElementById('f-name').value=a.name;
   document.getElementById('f-ticker').value=a.ticker||'';
-  document.getElementById('f-account').value=a.account;
   document.getElementById('f-cost').value=a.cost;
   document.getElementById('f-qty').value=a.qty;
-  document.getElementById('f-price').value=a.price;
-  document.getElementById('f-prev').value=a.prev;
+  const statusEl=document.getElementById('fetch-status');
+  if(a.price){
+    statusEl.style.color='var(--up)';
+    statusEl.textContent=`現在価格: ¥${a.price.toLocaleString('ja-JP')} （前回取得済み）`;
+    document.getElementById('form-current-price').textContent='¥'+a.price.toLocaleString('ja-JP');
+    document.getElementById('form-total-row').style.display='block';
+    updateFormTotal();
+  } else {
+    statusEl.textContent='';
+    document.getElementById('form-total-row').style.display='none';
+  }
   closeSheet('detail-sheet');
   document.getElementById('add-sheet').classList.add('open');
+}
+
+async function fetchPriceForForm(){
+  const ticker=document.getElementById('f-ticker').value.trim();
+  if(!ticker){ showToast('ティッカーを入力してください'); return; }
+  const btn=document.getElementById('fetch-price-btn');
+  const statusEl=document.getElementById('fetch-status');
+  btn.disabled=true; btn.textContent='取得中…';
+  statusEl.style.color='var(--text3)'; statusEl.textContent='株価を取得中…';
+  try{
+    const {price,prev}=await fetchYahooPrice(ticker);
+    window._formPrice=price; window._formPrev=prev;
+    statusEl.style.color='var(--up)';
+    statusEl.textContent=`現在価格: ¥${price.toLocaleString('ja-JP')}　前日終値: ¥${prev.toLocaleString('ja-JP')}`;
+    document.getElementById('form-current-price').textContent='¥'+price.toLocaleString('ja-JP');
+    document.getElementById('form-total-row').style.display='block';
+    updateFormTotal();
+  } catch(e){
+    statusEl.style.color='var(--down)'; statusEl.textContent='取得失敗。ティッカーを確認してください。';
+  } finally{
+    btn.disabled=false; btn.textContent='取得';
+  }
+}
+
+function updateFormTotal(){
+  const qty=parseFloat(document.getElementById('f-qty').value)||0;
+  const cost=parseFloat(document.getElementById('f-cost').value)||0;
+  const price=window._formPrice||0;
+  if(qty>0 && cost>0){
+    const total=cost*qty;
+    document.getElementById('form-total').textContent='¥'+total.toLocaleString('ja-JP');
+    document.getElementById('form-total-row').style.display='block';
+  }
+  if(price>0){
+    document.getElementById('form-current-price').textContent='¥'+price.toLocaleString('ja-JP');
+  }
 }
 
 function saveAsset(){
   const name=document.getElementById('f-name').value.trim();
   if(!name){alert('銘柄名を入力してください');return;}
+  const ticker=document.getElementById('f-ticker').value.trim();
+  const price=window._formPrice||0;
+  const prev=window._formPrev||0;
+  if(ticker && !price){ showToast('「取得」ボタンで株価を取得してから保存してください'); return; }
   const a={
     id:editingId||Date.now().toString(),
     type:document.getElementById('f-type').value,
     name,
-    ticker:document.getElementById('f-ticker').value.trim(),
-    account:document.getElementById('f-account').value.trim()||'未分類',
+    ticker,
+    account:'',
     cost:parseFloat(document.getElementById('f-cost').value)||0,
     qty:parseFloat(document.getElementById('f-qty').value)||0,
-    price:parseFloat(document.getElementById('f-price').value)||0,
-    prev:parseFloat(document.getElementById('f-prev').value)||0,
+    price,
+    prev,
     _sim:null,
   };
   if(editingId){
